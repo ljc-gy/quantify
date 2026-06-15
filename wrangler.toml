@@ -7,6 +7,6 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "quantify-db"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "a4cd34c3-80fc-4062-b688-031b2b948d50"
 
 # Cloudflare Pages project — deploys Vite frontend + Hono API via Functions
