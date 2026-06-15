@@ -1,0 +1,6 @@
+name = "quantify"
+pages_build_output_dir = "quant-dashboard/client/dist"
+compatibility_date = "2025-06-15"
+
+# Cloudflare Pages project — deploys the Vite-built frontend
+# API endpoints are NOT included (Express backend is not Workers-compatible).
