@@ -1,0 +1,1088 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== 全局基础 ===== */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
+      'Microsoft YaHei', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ===== 复用组件样式 ===== */
+@layer components {
+  /* 卡片容器 */
+  .card-panel {
+    @apply rounded-card p-4 backdrop-blur-sm transition-shadow duration-300;
+    background: rgba(17, 24, 39, 0.80);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.30);
+  }
+  .card-panel:hover {
+    box-shadow: 0 0 22px rgba(99, 102, 241, 0.45),
+                0 0 40px rgba(139, 92, 246, 0.15);
+  }
+
+  /* Asset allocation card (blue glow variant) */
+  .asset-card {
+    position: relative;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    backdrop-filter: blur(4px);
+    transition: box-shadow 0.3s ease, transform 0.25s ease, border-color 0.3s ease;
+    overflow: hidden;
+    animation: chartSlideUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  @keyframes cardFadeIn {
+    0% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .asset-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.55);
+    box-shadow: 0 0 24px rgba(59, 130, 246, 0.45),
+                0 4px 20px rgba(59, 130, 246, 0.15);
+  }
+  .asset-card::before,
+  .asset-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 12px; height: 12px;
+    border-top: 2px solid rgba(59, 130, 246, 0.6);
+    pointer-events: none;
+    transition: border-color 0.3s ease;
+  }
+  .asset-card::before {
+    left: 0;
+    border-left: 2px solid rgba(59, 130, 246, 0.6);
+  }
+  .asset-card::after {
+    right: 0;
+    border-right: 2px solid rgba(59, 130, 246, 0.6);
+  }
+  .asset-card:hover::before,
+  .asset-card:hover::after {
+    border-top-color: rgba(96, 165, 250, 0.8);
+  }
+  .asset-card:hover::before { border-left-color: rgba(96, 165, 250, 0.8); }
+  .asset-card:hover::after { border-right-color: rgba(96, 165, 250, 0.8); }
+  .asset-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .asset-card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+    flex-shrink: 0;
+  }
+
+  /* ── Gradient number cards ── */
+  .gradient-num-card {
+    position: relative;
+    padding: 18px 16px;
+    border-radius: 12px;
+    cursor: default;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .gradient-num-card:hover {
+    transform: translateY(-1px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 6px 24px rgba(0,0,0,0.3);
+  }
+
+  /* ── Progress bar glow ── */
+  .progress-bar-fill {
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 12px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25));
+  }
+
+  /* ── interactive button inside cards ── */
+  .card-btn {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .card-btn:hover {
+    filter: brightness(1.15);
+  }
+  .card-btn:active {
+    transform: scale(0.96);
+  }
+
+  /* ── Number roll animation ── */
+  @keyframes numberRoll {
+    0% { opacity: 0; transform: translateY(-8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .animate-number {
+    animation: numberRoll 0.4s ease-out both;
+  }
+
+  /* ── Responsive grid for asset page ── */
+  .asset-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 100%;
+    min-height: 0;
+  }
+  @media (max-width: 1400px) {
+    .asset-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+    }
+    .asset-grid .giant-cell { grid-row: auto !important; grid-column: auto !important; }
+  }
+  @media (max-width: 1000px) {
+    .asset-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+    .asset-grid > * { grid-row: auto !important; grid-column: auto !important; }
+  }
+
+  /* 发光文字 */
+  .text-glow {
+    text-shadow: 0 0 12px rgba(99, 102, 241, 0.5),
+                 0 0 24px rgba(139, 92, 246, 0.25);
+  }
+  .text-glow-cyan {
+    text-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+  }
+
+  /* 渐变文字 */
+  .gradient-text {
+    @apply bg-gradient-to-r from-cyber-cyan via-cyber-indigo to-cyber-purple
+           bg-clip-text text-transparent;
+  }
+
+  /* 侧边栏发光右边框 */
+  .sidebar-glow-border {
+    border-right: 1px solid rgba(99, 102, 241, 0.20);
+    box-shadow: inset -2px 0 16px rgba(99, 102, 241, 0.08);
+  }
+
+  /* 菜单项 */
+  .menu-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-md
+           cursor-pointer transition-all duration-200;
+    color: #94a3b8;
+    border-left: 3px solid transparent;
+  }
+  .menu-item:hover {
+    color: #e2e8f0;
+    background: rgba(99, 102, 241, 0.08);
+  }
+  .menu-item.active {
+    color: #00e5ff;
+    background: rgba(99, 102, 241, 0.12);
+    border-left-color: #00e5ff;
+    box-shadow: inset 0 0 12px rgba(99, 102, 241, 0.08);
+  }
+
+  /* 按钮基础 */
+  .btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md
+           text-sm font-medium transition-all duration-200
+           cursor-pointer select-none;
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    @apply btn;
+    color: #00e5ff;
+    background: rgba(99, 102, 241, 0.20);
+    border: 1px solid rgba(99, 102, 241, 0.30);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.25);
+  }
+  .btn-primary:hover {
+    background: rgba(99, 102, 241, 0.30);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.30);
+  }
+
+  .btn-ghost {
+    @apply btn;
+    color: #94a3b8;
+  }
+  .btn-ghost:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* 呼吸灯 */
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+    animation: breathe 2s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(34, 197, 94, 0.5); }
+    50%      { opacity: 0.45; box-shadow: 0 0 16px rgba(34, 197, 94, 0.85); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(1.15); }
+  }
+}
+
+/* ================================================================
+   NEW ANIMATIONS — 美化与交互细节
+   ================================================================ */
+
+@layer components {
+
+  /* ── 图标浮动动画 (3s cycle) ── */
+  @keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+  }
+  .icon-float {
+    animation: iconFloat 3s ease-in-out infinite;
+  }
+
+  /* ── 六边形呼吸发光 ── */
+  @keyframes hexBreathe {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.2),
+                  inset 0 0 6px rgba(139, 92, 246, 0.06);
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(139, 92, 246, 0.45),
+                  inset 0 0 14px rgba(139, 92, 246, 0.15);
+    }
+  }
+  @keyframes hexBreatheBlue {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.2),
+                  inset 0 0 6px rgba(59, 130, 246, 0.06);
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(59, 130, 246, 0.45),
+                  inset 0 0 14px rgba(59, 130, 246, 0.15);
+    }
+  }
+  @keyframes hexBreatheCyan {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2),
+                  inset 0 0 6px rgba(6, 182, 212, 0.06);
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(6, 182, 212, 0.45),
+                  inset 0 0 14px rgba(6, 182, 212, 0.15);
+    }
+  }
+
+  /* ── 图表滑入动画 (800ms, from bottom) ── */
+  @keyframes chartSlideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .chart-slide-up {
+    animation: chartSlideUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  /* ── 标注框淡入动画 ── */
+  @keyframes markFadeIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── 标签下划线滑动效果 ── */
+  .tab-underline {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6), 0 0 16px rgba(139, 92, 246, 0.3);
+    transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ── 标签页过渡动画 ── */
+  .pos-tab {
+    position: relative;
+    padding: 10px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .pos-tab:hover {
+    color: #cbd5e1;
+  }
+  .pos-tab:active {
+    transform: scale(0.98);
+  }
+  .pos-tab.active {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+    border-radius: 6px;
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.4),
+                0 0 28px rgba(59, 130, 246, 0.2);
+  }
+
+  .pos-subtab {
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+  }
+  .pos-subtab:hover {
+    color: #94a3b8;
+    background: rgba(59, 130, 246, 0.1);
+  }
+  .pos-subtab:active {
+    transform: scale(0.98);
+  }
+  .pos-subtab.active {
+    color: #e2e8f0;
+    background: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+  }
+
+  /* ── 增强六边形卡片 (.hex-card) ── */
+  .hex-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 14px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.15),
+                inset 0 0 6px rgba(59, 130, 246, 0.06);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    text-align: center;
+    overflow: hidden;
+    animation: hexBreatheBlue 3s ease-in-out infinite;
+  }
+  .hex-card:hover {
+    transform: translateY(-4px) rotate(5deg);
+    border-color: rgba(139, 92, 246, 0.55);
+    box-shadow: 0 0 28px rgba(139, 92, 246, 0.5),
+                0 0 50px rgba(59, 130, 246, 0.25),
+                inset 0 0 16px rgba(139, 92, 246, 0.15);
+    animation: none;
+  }
+  .hex-card:active {
+    transform: scale(0.98);
+  }
+  .hex-card::before,
+  .hex-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 10px; height: 10px;
+    pointer-events: none;
+  }
+  .hex-card::before {
+    left: 0;
+    border-top: 1.5px solid rgba(139, 92, 246, 0.4);
+    border-left: 1.5px solid rgba(139, 92, 246, 0.4);
+  }
+  .hex-card::after {
+    right: 0;
+    border-top: 1.5px solid rgba(139, 92, 246, 0.4);
+    border-right: 1.5px solid rgba(139, 92, 246, 0.4);
+  }
+  .hex-card .hex-icon {
+    transition: transform 0.3s ease;
+  }
+  .hex-card:hover .hex-icon {
+    animation: iconFloat 1.5s ease-in-out infinite;
+  }
+
+  /* ── Quant Analysis hex-card variant (cyan) ── */
+  .quant-card .hex-card {
+    border-color: rgba(6, 182, 212, 0.25);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.15),
+                inset 0 0 6px rgba(6, 182, 212, 0.06);
+    animation: hexBreatheCyan 3s ease-in-out infinite;
+  }
+  .quant-card .hex-card:hover {
+    border-color: rgba(34, 211, 238, 0.55);
+    box-shadow: 0 0 28px rgba(6, 182, 212, 0.5),
+                0 0 50px rgba(34, 211, 238, 0.25),
+                inset 0 0 16px rgba(6, 182, 212, 0.15);
+  }
+
+  /* ── 全局 clickable 元素交互 ── */
+  button, [role="button"], .clickable {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  button:active, [role="button"]:active, .clickable:active {
+    transform: scale(0.98);
+  }
+
+  .pos-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+  .pos-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+    border-radius: 4px;
+  }
+  .pos-scroll::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.25);
+    border-radius: 4px;
+  }
+  .pos-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* ===== Risk Control page — full-screen tech border ===== */
+@layer components {
+  .risk-frame {
+    position: relative;
+    flex: 1;
+    margin: 10px;
+    padding: 28px;
+    border: 2px solid rgba(59, 130, 246, 0.7);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4),
+                0 0 30px rgba(139, 92, 246, 0.2);
+    background: linear-gradient(180deg, #070b12 0%, #0f172a 100%);
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .risk-frame::before,
+  .risk-frame::after,
+  .risk-frame > .corner-bl,
+  .risk-frame > .corner-br {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .risk-frame::before {
+    top: -2px; left: -2px;
+    border-top: 3px solid #60a5fa;
+    border-left: 3px solid #60a5fa;
+    box-shadow: 0 0 6px rgba(96,165,250,0.6);
+  }
+  .risk-frame::after {
+    top: -2px; right: -2px;
+    border-top: 3px solid #60a5fa;
+    border-right: 3px solid #60a5fa;
+    box-shadow: 0 0 6px rgba(96,165,250,0.6);
+  }
+
+  .risk-card {
+    position: relative;
+    padding: 20px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.2),
+                inset 0 0 10px rgba(59, 130, 246, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.25s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: chartSlideUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  .risk-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4),
+                inset 0 0 14px rgba(59, 130, 246, 0.15);
+  }
+  .risk-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+  }
+  .risk-card-title .diamond {
+    color: #3b82f6;
+    font-size: 8px;
+    filter: drop-shadow(0 0 4px rgba(59,130,246,0.5));
+  }
+  .risk-card-title .title-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.025em;
+  }
+}
+
+/* ===== Alert page — pink-purple neon cards ===== */
+@layer components {
+  .alert-card {
+    position: relative;
+    padding: 18px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.3),
+                0 0 25px rgba(236, 72, 153, 0.15),
+                inset 0 0 8px rgba(139, 92, 246, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.25s ease, border-color 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: chartSlideUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  .alert-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(236, 72, 153, 0.5);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5),
+                0 0 40px rgba(236, 72, 153, 0.25),
+                inset 0 0 12px rgba(139, 92, 246, 0.15);
+  }
+  .alert-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+  .alert-card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #ec4899, #8b5cf6);
+    flex-shrink: 0;
+  }
+  .alert-card-title .title-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.025em;
+  }
+}
+
+/* ===== Position Management page — deep blue + purple sci-fi cards ===== */
+@layer components {
+  .pos-card {
+    position: relative;
+    padding: 18px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.2),
+                inset 0 0 8px rgba(59, 130, 246, 0.08);
+    transition: box-shadow 0.3s ease, transform 0.25s ease, border-color 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: chartSlideUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  .pos-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(59, 130, 246, 0.55);
+    box-shadow: 0 0 18px rgba(59, 130, 246, 0.4),
+                inset 0 0 12px rgba(59, 130, 246, 0.12);
+  }
+  .pos-card::before,
+  .pos-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 12px; height: 12px;
+    border-top: 2px solid rgba(59, 130, 246, 0.5);
+    pointer-events: none;
+    transition: border-color 0.3s ease;
+  }
+  .pos-card::before {
+    left: 0;
+    border-left: 2px solid rgba(59, 130, 246, 0.5);
+  }
+  .pos-card::after {
+    right: 0;
+    border-right: 2px solid rgba(59, 130, 246, 0.5);
+  }
+  .pos-card:hover::before {
+    border-top-color: rgba(96, 165, 250, 0.8);
+    border-left-color: rgba(96, 165, 250, 0.8);
+  }
+  .pos-card:hover::after {
+    border-top-color: rgba(96, 165, 250, 0.8);
+    border-right-color: rgba(96, 165, 250, 0.8);
+  }
+  .pos-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+  .pos-card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+    flex-shrink: 0;
+  }
+  .pos-card-title .title-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.025em;
+  }
+}
+
+/* ===== Quant Analysis page — cyan-teal sci-fi cards ===== */
+@layer components {
+  .quant-card {
+    position: relative;
+    padding: 18px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.2),
+                inset 0 0 8px rgba(6, 182, 212, 0.06);
+    transition: box-shadow 0.3s ease, transform 0.25s ease, border-color 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: chartSlideUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+  .quant-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(34, 211, 238, 0.55);
+    box-shadow: 0 0 18px rgba(6, 182, 212, 0.4),
+                inset 0 0 12px rgba(6, 182, 212, 0.1);
+  }
+  .quant-card::before,
+  .quant-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 12px; height: 12px;
+    border-top: 2px solid rgba(6, 182, 212, 0.5);
+    pointer-events: none;
+    transition: border-color 0.3s ease;
+  }
+  .quant-card::before {
+    left: 0;
+    border-left: 2px solid rgba(6, 182, 212, 0.5);
+  }
+  .quant-card::after {
+    right: 0;
+    border-right: 2px solid rgba(6, 182, 212, 0.5);
+  }
+  .quant-card:hover::before {
+    border-top-color: rgba(34, 211, 238, 0.8);
+    border-left-color: rgba(34, 211, 238, 0.8);
+  }
+  .quant-card:hover::after {
+    border-top-color: rgba(34, 211, 238, 0.8);
+    border-right-color: rgba(34, 211, 238, 0.8);
+  }
+  .quant-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+  .quant-card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #06b6d4, #22d3ee);
+    flex-shrink: 0;
+  }
+  .quant-card-title .title-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.025em;
+  }
+}
+
+
+
+/* ===== Strategy Recommendation page — purple-pink sci-fi cards ===== */
+@layer components {
+  .strategy-card {
+    position: relative;
+    padding: 18px;
+    border-radius: 6px;
+    background: rgba(13, 21, 40, 0.95);
+    border: 1px solid transparent;
+    border-image: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899) 1;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2),
+                0 0 20px rgba(139, 92, 246, 0.1),
+                inset 0 0 6px rgba(59, 130, 246, 0.08);
+    transition: box-shadow 0.3s ease, transform 0.25s ease, border-color 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: chartSlideUp 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both,
+               borderFlow 6s ease-in-out infinite;
+  }
+  .strategy-card:hover {
+    transform: translateY(-1px);
+    border-image: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6) 1;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4),
+                0 0 30px rgba(139, 92, 246, 0.2),
+                inset 0 0 10px rgba(59, 130, 246, 0.12);
+  }
+}
+
+/* ================================================================
+   RESPONSIVE BREAKPOINTS — 全局响应式适配
+   ================================================================ */
+
+/* ——— Strategy-specific animations ——— */
+/* Border glow flow: cycles blue → purple → pink over 6s */
+@keyframes borderFlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2),
+                0 0 20px rgba(139, 92, 246, 0.1),
+                inset 0 0 6px rgba(59, 130, 246, 0.08);
+  }
+  33% {
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.35),
+                0 0 24px rgba(236, 72, 153, 0.15),
+                inset 0 0 10px rgba(139, 92, 246, 0.12);
+  }
+  66% {
+    box-shadow: 0 0 12px rgba(236, 72, 153, 0.25),
+                0 0 22px rgba(59, 130, 246, 0.18),
+                inset 0 0 8px rgba(236, 72, 153, 0.1);
+  }
+}
+
+/* 3D hexagon slow rotation — 10s cycle */
+@keyframes hexRotate {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Chart left-to-right slide-in — 900ms */
+@keyframes chartSlideLeft {
+  0%   { opacity: 0; transform: translateX(-30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Text glow for key values */
+.text-glow-val {
+  text-shadow: 0 0 6px currentColor;
+}
+
+/* Clickable elements — pointer + scale feedback */
+.clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.clickable:active {
+  transform: scale(0.98);
+}
+
+/* Strategy page responsive grid */
+.strategy-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr 1fr 1fr;
+  min-height: 0;
+}
+@media (max-width: 1600px) {
+  .strategy-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .strategy-grid .span-2 {
+    grid-column: auto !important;
+  }
+  .strategy-grid .span-2-rows {
+    grid-row: auto !important;
+    grid-column: auto !important;
+  }
+}
+@media (max-width: 1200px) {
+  .strategy-grid {
+    grid-template-columns: 1fr;
+  }
+  .strategy-grid > * {
+    grid-row: auto !important;
+    grid-column: auto !important;
+  }
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+.modal-panel {
+  width: 680px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  background: rgba(13, 21, 40, 0.98);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3),
+              0 0 60px rgba(59, 130, 246, 0.15);
+  padding: 28px;
+  animation: modalSlideUp 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@keyframes modalSlideUp {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* <1600px: 2-column layout for dashboard */
+@media (max-width: 1600px) {
+  /* Dashboard 3-col → 2-col */
+  .dashboard-grid-3col {
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto !important;
+  }
+  .dashboard-grid-3col > * {
+    grid-row: auto !important;
+    grid-column: auto !important;
+  }
+
+  /* Position & Quant pages 32/38/30 → 1fr 1fr */
+  .page-grid-3col {
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto !important;
+  }
+  .page-grid-3col > * {
+    grid-row: auto !important;
+    grid-column: auto !important;
+  }
+}
+
+/* <1200px: single column */
+@media (max-width: 1200px) {
+  .dashboard-grid-3col,
+  .page-grid-3col {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+  }
+  .dashboard-grid-3col > *,
+  .page-grid-3col > * {
+    grid-row: auto !important;
+    grid-column: auto !important;
+  }
+}
+
+/* 自定义工具类 */
+@layer utilities {
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+}
+    /* ===== Fund Management page — blue-purple financial cards ===== */
+    .fund-card {
+      position: relative;
+      padding: 20px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.2),
+                  inset 0 0 8px rgba(59, 130, 246, 0.08);
+      transition: box-shadow 0.3s ease, transform 0.25s ease, border-color 0.3s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .fund-card:hover {
+      transform: translateY(-1px);
+      border-color: rgba(96, 165, 250, 0.55);
+      box-shadow: 0 0 18px rgba(59, 130, 246, 0.4),
+                  inset 0 0 12px rgba(59, 130, 246, 0.12);
+    }
+    .fund-card::before,
+    .fund-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 12px; height: 12px;
+      border-top: 2px solid rgba(59, 130, 246, 0.5);
+      pointer-events: none;
+      transition: border-color 0.3s ease;
+    }
+    .fund-card::before {
+      left: 0;
+      border-left: 2px solid rgba(59, 130, 246, 0.5);
+    }
+    .fund-card::after {
+      right: 0;
+      border-right: 2px solid rgba(59, 130, 246, 0.5);
+    }
+    .fund-card:hover::before {
+      border-top-color: rgba(96, 165, 250, 0.8);
+      border-left-color: rgba(96, 165, 250, 0.8);
+    }
+    .fund-card:hover::after {
+      border-top-color: rgba(96, 165, 250, 0.8);
+      border-right-color: rgba(96, 165, 250, 0.8);
+    }
+    .fund-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .fund-card-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px;
+      height: 16px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+      flex-shrink: 0;
+    }
+    .fund-card-title .title-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.025em;
+    }
+    .fund-long-term-card > .flex-1 {
+      overflow: hidden;
+    }
+    /* Fund category overview card — compact number display */
+    .fund-cat-card {
+      position: relative;
+      padding: 20px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.15),
+                  inset 0 0 6px rgba(59, 130, 246, 0.05);
+      transition: box-shadow 0.3s ease, transform 0.25s ease;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .fund-cat-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.35),
+                  inset 0 0 10px rgba(59, 130, 246, 0.08);
+    }
+
+
+    /* ===== Fund page animations ===== */
+    @keyframes fundSlideUp {
+      0% { opacity: 0; transform: translateY(16px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes titleBarBreathe {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    @keyframes floatLabel {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .fund-slide-up { animation: fundSlideUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+    .fund-slide-up-1 { animation-delay: 0.05s; }
+    .fund-slide-up-2 { animation-delay: 0.15s; }
+    .fund-slide-up-3 { animation-delay: 0.25s; }
+    .fund-slide-up-4 { animation-delay: 0.35s; }
+    .fund-slide-up-5 { animation-delay: 0.45s; }
+    .fund-slide-up-6 { animation-delay: 0.10s; }
+    .title-bar-breathe { animation: titleBarBreathe 3s ease-in-out infinite; }
+    .float-label { animation: floatLabel 2s ease-in-out infinite; }
+    .fund-cat-selected {
+      box-shadow: 0 0 18px rgba(59,130,246,0.55), inset 0 0 12px rgba(59,130,246,0.15) !important;
+      border-color: rgba(96,165,250,0.6) !important;
+    }
+    .text-glow { text-shadow: 0 0 6px currentColor; }
+    .hover-scale { transition: transform 0.15s ease; }
+    .hover-scale:active { transform: scale(0.98); }
+    /* Responsive */
+    @media (max-width: 1600px) {
+      .fund-cat-grid { grid-template-columns: repeat(3, 1fr); }
+      .fund-cat-grid .fund-cat-card:nth-child(4),
+      .fund-cat-grid .fund-cat-card:nth-child(5) { grid-column: span 1; }
+      .fund-cat-grid::after { content: ""; display: none; }
+    }
+    @media (max-width: 1200px) {
+      .fund-cat-grid { grid-template-columns: 1fr; }
+      .fund-detail-grid { grid-template-columns: 1fr; }
+      .fund-cat-grid .fund-cat-card:nth-child(4),
+      .fund-cat-grid .fund-cat-card:nth-child(5) { grid-column: span 1; }
+    }

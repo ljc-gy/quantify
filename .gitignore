@@ -1,0 +1,14 @@
+﻿node_modules/
+dist/
+output/
+test-results/
+*.log
+*.pid
+.env
+.DS_Store
+*.png
+debug_out.txt
+final2.txt
+question_marks.txt
+top10-funds.txt
+quant-dashboard/server/data/
